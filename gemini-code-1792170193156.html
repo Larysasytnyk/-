@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Ninja Challenge: Базові Алгоритмічні Структури</title>
+    <!-- Підключення Brython для запуску Python у браузері -->
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.11.1/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3.11.1/brython_stdlib.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --panel-border: #334155;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-color: #3b82f6;
+            --accent-hover: #2563eb;
+            --success-color: #22c55e;
+            --error-color: #ef4444;
+            --code-bg: #090d16;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .progress-step.active {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .card h2 {
+            font-size: 1.2rem;
+            margin-top: 0;
+            color: #38bdf8;
+        }
+
+        p {
+            line-height: 1.5;
+        }
+
+        .editor-container {
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 180px;
+            background-color: var(--code-bg);
+            color: #38bdf8;
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .console-output {
+            background-color: var(--code-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            min-height: 80px;
+            max-height: 150px;
+            overflow-y: auto;
+            color: #cbd5e1;
+            white-space: pre-wrap;
+            margin-top: 10px;
+        }
+
+        .nav-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            background-color: var(--panel-bg);
+            padding: 15px 20px;
+            border-radius: 12px;
+            border: 1px solid var(--panel-border);
+        }
+
+        .nav-btn {
+            background: none;
+            border: 1px solid var(--panel-border);
+            color: var(--text-color);
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: var(--panel-border);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .success-msg {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .error-msg {
+            color: var(--error-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body onload="brython()">
+
+    <div class="container">
+        <header>
+            <h1>🐍 Python Ninja Challenge: Базові Алгоритмічні Структури 🔥</h1>
+            <p style="color: var(--text-muted); margin: 0;">Вирішуй життєві кейси, пиши код та перевіряй себе миттєво!</p>
+        </header>
+
+        <div class="progress-bar">
+            <span class="progress-step active" id="step-0">🛒 1. Умови (Функції)</span>
+            <span class="progress-step" id="step-1">🔄 2. Цикли</span>
+            <span class="progress-step" id="step-2">📋 3. Списки</span>
+            <span class="progress-step" id="step-3">🏆 4. Проєкт (Бюджет)</span>
+        </div>
+
+        <div class="workspace">
+            <!-- Блок завдання -->
+            <div class="card">
+                <div>
+                    <h2 id="task-title">Завдання 1</h2>
+                    <p id="task-desc">Опис завдання з'явиться тут...</p>
+                    <div style="background: rgba(59, 130, 246, 0.1); padding: 10px; border-radius: 6px; border-left: 4px solid var(--accent-color); font-size: 0.9rem;" id="task-hint">
+                        Підказка: використовуйте оператори порівняння та return.
+                    </div>
+                </div>
+                <div style="margin-top: 20px; color: var(--text-muted); font-size: 0.85rem;" id="task-counter">
+                    Рівень компетентності: Базовий алгоритмічний зв'язок
+                </div>
+            </div>
+
+            <!-- Блок редактора і термінала -->
+            <div class="card">
+                <div>
+                    <h2>Редактор Коду 💻</h2>
+                    <div class="editor-container">
+                        <textarea id="code-input" spellcheck="false"></textarea>
+                    </div>
+                    <button class="btn" id="run-btn" autocomplete="off">▶ Запустити та Перевірити</button>
+                </div>
+                <div>
+                    <h2 style="font-size: 1rem; margin-top: 15px; margin-bottom: 5px;">Результат / Консоль 🚀</h2>
+                    <div class="console-output" id="output">Натисніть «Запустити та Перевірити», щоб протестувати код...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Навігація -->
+        <div class="nav-footer">
+            <button class="nav-btn" id="prev-btn" onclick="changeTask(-1)">⬅ Назад</button>
+            <span id="task-indicators" style="font-weight: bold;">1 / 4</span>
+            <button class="nav-btn" id="next-btn" onclick="changeTask(1)">Наступна вправа ➡</button>
+        </div>
+    </div>
+
+    <!-- Python логіка через Brython -->
+    <script type="text/python">
+        from browser import document, window
+        import sys
+        import io
+
+        # Дані завдань
+        tasks = [
+            {
+                "title": "Вправа 1: Калькулятор Знижок (Умови та Функції) 🛒",
+                "desc": "Напишіть функцію <b>calculate_discount(price, percent)</b>, яка обчислює ціну зі знижкою. Якщо початкова ціна <b>>= 500</b> грн, додайте бонусні <b>-50 грн</b> додаткової знижки. Якщо ціна менша за 0, поверніть <b>-1</b> (помилка).",
+                "hint": "Приклад: calculate_discount(600, 10) має повернути 490.0 (оскільки 600 - 10% = 540, і мінус 50 грн бонус = 490).",
+                "code": "def calculate_discount(price, percent):\n    if price < 0:\n        return -1\n    discounted = price * (1 - percent / 100)\n    if price >= 500:\n        discounted -= 50\n    return discounted\n\n# Перевірка:\nprint(calculate_discount(600, 10))",
+                "test": lambda: test_task_1()
+            },
+            {
+                "title": "Вправа 2: Фільтрація Зламаних Датчиків (Цикли та Умови) 🔄",
+                "desc": "У нас є список показників температури. Напишіть функцію <b>clean_sensors(data)</b>, яка за допомогою циклу проходить по списку і повертає <b>новий список</b>, очищений від аномальних значень (все, що менше -50 або більше 50 — видаляємо).",
+                "hint": "Використовуйте цикл for, перевірку умовою if та метод append() для нового списку.",
+                "code": "def clean_sensors(data):\n    clean = []\n    for val in data:\n        if -50 <= val <= 50:\n            clean.append(val)\n    return clean\n\n# Перевірка:\nprint(clean_sensors([12, 105, -10, -70, 25]))",
+                "test": lambda: test_task_2()
+            },
+            {
+                "title": "Вправа 3: Аналізатор Текстових Повідомлень (Списки та Методи) 📋",
+                "desc": "Напишіть функцію <b>get_long_words(text)</b>, яка приймає рядок тексту, розбиває його на слова (метод split()) і повертає список лише тих слів, довжина яких <b>більша за 5 символів</b>.",
+                "hint": "Пам'ятайте, що довжину слова можна дізнатися через функцію len(word).",
+                "code": "def get_long_words(text):\n    words = text.split()\n    result = []\n    for w in words:\n        if len(w) > 5:\n            result.append(w)\n    return result\n\n# Перевірка:\nprint(get_long_words('Python це надзвичайно крута мова програмування'))",
+                "test": lambda: test_task_3()
+            },
+            {
+                "title": "Вправа 4: Кишеньковий Бюджетний Трекер (Компетентність) 💰",
+                "desc": "Напишіть функцію <b>smart_budget(transactions)</b>, яка приймає список чисел (доходи та витрати, наприклад: [500, -150, -50, 1200]). Функція повинна повернути <b>кортен/список із двома елементами</b>: загальний баланс та кількість витрат (від'ємних транзакцій).",
+                "hint": "Пройдіться циклом, рахуйте суму всіх елементів та окремо збільшуйте лічильник, якщо елемент < 0.",
+                "code": "def smart_budget(transactions):\n    balance = 0\n    expenses_count = 0\n    for t in transactions:\n        balance += t\n        if t < 0:\n            expenses_count += 1\n    return [balance, expenses_count]\n\n# Перевірка:\nprint(smart_budget([500, -150, -50, 1200]))",
+                "test": lambda: test_task_4()
+            }
+        ]
+
+        current_index = 0
+
+        def load_task(idx):
+            global current_index
+            current_index = idx
+            t = tasks[idx]
+            
+            document["task-title"].html = t["title"]
+            document["task-desc"].html = t["desc"]
+            document["task-hint"].html = "💡 " + t["hint"]
+            document["code-input"].value = t["code"]
+            document["output"].html = "Натисніть «Запустити та Перевірити», щоб протестувати код..."
+            document["task-indicators"].html = f"{idx + 1} / {len(tasks)}"
+            
+            # Оновлення підсвічування кроків у шапці
+            for i in range(len(tasks)):
+                step_el = document.select_one(f"#step-{i}")
+                if step_el:
+                    if i == idx:
+                        step_el.classList.add("active")
+                    else:
+                        step_el.classList.remove("active")
+                        
+            document["prev-btn"].disabled = (idx == 0)
+            if idx == len(tasks) - 1:
+                document["next-btn"].text = "Завершити 🎉"
+            else:
+                document["next-btn"].text = "Наступна вправа ➡"
+
+        def change_task(direction):
+            global current_index
+            new_idx = current_index + direction
+            if 0 <= new_idx < len(tasks):
+                load_task(new_idx)
+            elif new_idx >= len(tasks):
+                window.alert("Вітаю! Ви успішно пройшли всі базові завдання з алгоритмічних структур! 🏆")
+
+        # Функції перевірки результатів користувача
+        def test_task_1():
+            try:
+                user_code = document["code-input"].value
+                namespace = {}
+                exec(user_code, namespace)
+                func = namespace.get("calculate_discount")
+                if not func:
+                    return "❌ Помилка: функцію 'calculate_discount' не знайдено в коді!"
+                
+                # Тести
+                r1 = func(600, 10)
+                r2 = func(200, 20)
+                r3 = func(-50, 10)
+                
+                if r1 == 490.0 and r2 == 160.0 and r3 == -1:
+                    return "✅ Виконано успішно! Всі тести пройдено на відмінно! 🎉"
+                else:
+                    return f"❌ Тести не пройдені.\nВаші результати: f(600,10)={r1}, f(200,20)={r2}, f(-50,10)={r3}\nОчікувалося: 490.0, 160.0, -1"
+            except Exception as e:
+                return f"❌ Помилка у виконанні Python-коду:\n{str(e)}"
+
+        def test_task_2():
+            try:
+                user_code = document["code-input"].value
+                namespace = {}
+                exec(user_code, namespace)
+                func = namespace.get("clean_sensors")
+                if not func:
+                    return "❌ Помилка: функцію 'clean_sensors' не знайдено!"
+                
+                res = func([12, 105, -10, -70, 25])
+                if res == [12, -10, 25]:
+                    return "✅ Чудово! Датчики очищено правильно, аномалії видалено! 🚀"
+                else:
+                    return f"❌ Результат неправильний. Отримано: {res}, а очікувалося: [12, -10, 25]"
+            except Exception as e:
+                return f"❌ Помилка у коді:\n{str(e)}"
+
+        def test_task_3():
+            try:
+                user_code = document["code-input"].value
+                namespace = {}
+                exec(user_code, namespace)
+                func = namespace.get("get_long_words")
+                if not func:
+                    return "❌ Помилка: функцію 'get_long_words' не знайдено!"
+                
+                res = func("Python це супер")
+                # 'надзвичайно крута мова програмування'
+                res2 = func("тест")
+                if "надзвичайно" in func("Python це надзвичайно крута мова програмування"):
+                    return "✅ Чудово! Слова успішно відфільтровано за довжиною! 🎯"
+                else:
+                    return f"❌ Тест не пройдено. Перевірте логіку умов довжини len()."
+            except Exception as e:
+                return f"❌ Помилка у коді:\n{str(e)}"
+
+        def test_task_4():
+            try:
+                user_code = document["code-input"].value
+                namespace = {}
+                exec(user_code, namespace)
+                func = namespace.get("smart_budget")
+                if not func:
+                    return "❌ Помилка: функцію 'smart_budget' не знайдено!"
+                
+                res = func([500, -150, -50, 1200])
+                if res == [1500, 2]:
+                    return "✅ Вітаю! Компетентнісну задачу вирішено повністю! Баланс і витрати пораховано вірно! 🏆"
+                else:
+                    return f"❌ Неправильний результат. Отримано: {res}, очікувалося: [1500, 2]"
+            except Exception as e:
+                return f"❌ Помилка у коді:\n{str(e)}"
+
+        def run_code(ev):
+            t = tasks[current_index]
+            result_text = t["test"]()
+            document["output"].html = result_text
+
+        # Прив'язка подій до кнопок
+        document["run-btn"].bind("click", run_code)
+        
+        # Експортуємо функції навігації у глобальну область видимості для HTML
+        window.changeTask = changeTask
+        
+        # Ініціалізація першого завдання
+        load_task(0)
+    </script>
+
+</body>
+</html>
